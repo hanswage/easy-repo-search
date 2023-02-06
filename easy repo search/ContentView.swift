@@ -8,15 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var searchQuery = ""
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                ForEach(searchResults, id: \.self) { name in
+                    Text(name)
+                }
+            }
+            .navigationTitle("Easy Repo search")
         }
-        .padding()
+        .searchable(text: $searchQuery, prompt: "Search for user of repository name")
     }
+    
+    // TODO: Placeholder for search results
+    var searchResults: [String] = [String]()
 }
 
 struct ContentView_Previews: PreviewProvider {
