@@ -14,7 +14,11 @@ struct ContentView: View {
         NavigationStack {
             List {
                 ForEach(searchResults, id: \.self) { name in
-                    Text(name)
+                    NavigationLink {
+                        DetailView(name: name)
+                    } label: {
+                        Text(name)
+                    }
                 }
             }
             .navigationTitle("Easy Repo search")
