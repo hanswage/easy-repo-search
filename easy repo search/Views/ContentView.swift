@@ -24,6 +24,10 @@ struct ContentView: View {
             .navigationTitle("Easy Repo search")
         }
         .searchable(text: $searchQuery, prompt: "Search for user of repository name")
+        .onAppear() {
+            // TODO: Remove onAppear, added for testing purposes
+            GitHubService().searchGitHub(withQuery: "hans")
+        }
     }
     
     // TODO: Placeholder for search results
