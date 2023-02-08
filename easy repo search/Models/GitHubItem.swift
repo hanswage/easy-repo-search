@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GitHubItem: Codable {
+struct GitHubItem: Codable, Hashable {
     let fullName: String?
     let privateRepository: Bool?
     let owner: GitHubOwner?
