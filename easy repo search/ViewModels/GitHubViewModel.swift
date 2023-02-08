@@ -14,6 +14,11 @@ class GitHubViewModel : ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
+    /**
+     Search GitHub for repositories by owner name or repository name.
+     
+     - parameter query: A String that will be passed to the API to search for.
+     */
     func searchGitHub(withQuery query: String) {
         let gitHubUrl = String.init(format: Constants.GitHub.GITHUB_SEARCH_URL, query)
         
@@ -49,6 +54,9 @@ class GitHubViewModel : ObservableObject {
         cancellables.insert(task)
     }
     
+    /**
+     Cancels all currently running requests, preventing loading data twice
+     */
     private func cancelAll() {
         for cancellable in cancellables {
             cancellable.cancel()
