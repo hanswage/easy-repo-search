@@ -8,6 +8,10 @@
 import Foundation
 
 struct Constants {
+    struct Keys {
+        static let KEY_GITHUB_ID = "GITHUB_KEY"
+    }
+    
     struct GitHub {
         private static let GITHUB_BASE_URL = "https://api.github.com/"
         
