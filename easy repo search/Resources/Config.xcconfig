@@ -1,0 +1,15 @@
+//
+//  Config.xcconfig
+//  easy repo search
+//
+//  Created by Hans Wage on 07/02/2023.
+//
+//  For demonstration purposes this file is checked in. This would
+//  not be allowed on production code and be blocked in .gitignore.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+GITHUB_KEY=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
+ 
