@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct DetailView: View {
-    let name: String
+    let gitHubItem: GitHubItem?
     
     var body: some View {
-        Text(name)
+        Text(gitHubItem?.fullName ?? "")
     }
 }
 
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
-        DetailView(name: "hanswage/easy-repo-search")
+        DetailView(gitHubItem: nil)
     }
 }

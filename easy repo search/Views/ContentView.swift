@@ -8,30 +8,35 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var searchQuery = ""
+    @ObservedObject var gitHubViewModel = GitHubViewModel()
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(searchResults, id: \.self) { name in
-                    NavigationLink {
-                        DetailView(name: name)
-                    } label: {
-                        Text(name)
-                    }
+            if let items = gitHubViewModel.gitHubItems, items.count == 0 {
+                Text("No repositories found, please search again.")
+                    .font(.system(size: 14))
+                    .bold()
+            }
+            List(gitHubViewModel.gitHubItems ?? [], id: \.self) { item in
+                NavigationLink {
+                    DetailView(gitHubItem: item)
+                } label: {
+                    RepoCellView(gitHubItem: item)
                 }
             }
             .navigationTitle("Easy Repo search")
         }
-        .searchable(text: $searchQuery, prompt: "Search for user of repository name")
-        .onAppear() {
-            // TODO: Remove onAppear, added for testing purposes
-            GitHubService().searchGitHub(withQuery: "hans")
+        .searchable(text: $gitHubViewModel.searchQuery, prompt: "Search for user or repository name")
+        .textInputAutocapitalization(.never)
+        .onReceive(
+            gitHubViewModel.$searchQuery.throttle(
+                for: 2,
+                scheduler: RunLoop.main,
+                latest: true)
+        ) {
+            gitHubViewModel.searchGitHub(withQuery: $0)
         }
     }
-    
-    // TODO: Placeholder for search results
-    var searchResults: [String] = [String]()
 }
 
 struct ContentView_Previews: PreviewProvider {
