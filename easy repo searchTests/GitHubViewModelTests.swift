@@ -6,41 +6,67 @@
 //
 
 import XCTest
+import Combine
 @testable import easy_repo_search
 
 final class GitHubViewModelTests: XCTestCase {
+    var responseMock: ResponseDataPublisherMock!
     var gitHubViewModel: GitHubViewModel!
-
+    var expectation: XCTestExpectation!
+    var cancelSet: Set<AnyCancellable> = []
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        gitHubViewModel = GitHubViewModel()
+        responseMock = ResponseDataPublisherMock()
+        gitHubViewModel = GitHubViewModel(responseDataPublisher: responseMock)
+        expectation = self.expectation(description: "Waiting for items to be set")
+        
+        gitHubViewModel.$gitHubItems
+            .sink { response in
+                guard response != nil else { return }
+                
+                // The data was not nil this time, fulfill the expectation
+                self.expectation.fulfill()
+            }
+            .store(in: &cancelSet)
     }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        responseMock = nil
+        gitHubViewModel = nil
     }
     
     func testFetchCorrectDataStructure() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+        gitHubViewModel.searchGitHub(withQuery: "correct")
         
-        // TODO: Implement test
-        XCTAssertTrue(false)
+        // Wait for a maximum of 1 second or until fulfill has been called to ensure the data has been set.
+        wait(for: [expectation], timeout: 1)
+        
+        // In our mock, there is only 1 value, check if it is true and owner was set.
+        XCTAssertEqual(gitHubViewModel.gitHubItems?.count, 1)
+        XCTAssertNotNil(gitHubViewModel.gitHubItems?[0].owner)
     }
     
     func testFetchIncorrectDataStructure() throws {
-        // TODO: Implement test
-        XCTAssertTrue(false)
+        gitHubViewModel.searchGitHub(withQuery: "missingOwner")
+        
+        // Wait for a maximum of 1 second or until fulfill has been called to ensure the data has been set.
+        wait(for: [expectation], timeout: 1)
+        
+        // In our mock, there is only 1 value, check if it is true, but owner is nil.
+        XCTAssertEqual(gitHubViewModel.gitHubItems?.count, 1)
+        XCTAssertNil(gitHubViewModel.gitHubItems?[0].owner)
     }
     
     func testFetchEmptyData() throws {
-        // TODO: Implement test
-        XCTAssertTrue(false)
+        gitHubViewModel.searchGitHub(withQuery: "missingItems")
+        
+        // Wait for a maximum of 1 second or until fulfill has been called to ensure the data has been set.
+        wait(for: [expectation], timeout: 1)
+        
+        // We expect no values, but a well set empty array.
+        XCTAssertEqual(gitHubViewModel.gitHubItems?.count, 0)
+        XCTAssertNotNil(gitHubViewModel.gitHubItems)
     }
 }

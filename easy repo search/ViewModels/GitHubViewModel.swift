@@ -10,9 +10,14 @@ import Combine
 
 class GitHubViewModel : ObservableObject {
     @Published public var searchQuery: String = ""
-    @Published var gitHubItems: [GitHubItem] = []
+    @Published var gitHubItems: [GitHubItem]?
     
     private var cancellables = Set<AnyCancellable>()
+    private let responseDataPublisher: ResponseProtocol
+    
+    init(responseDataPublisher: ResponseProtocol = ResponseDataPublisher(session: URLSession.shared)) {
+        self.responseDataPublisher = responseDataPublisher
+    }
     
     /**
      Search GitHub for repositories by owner name or repository name.
@@ -22,7 +27,10 @@ class GitHubViewModel : ObservableObject {
     func searchGitHub(withQuery query: String) {
         let gitHubUrl = String.init(format: Constants.GitHub.GITHUB_SEARCH_URL, query)
         
-        guard let url = URL(string: gitHubUrl), let apiId = getApiId() else {
+        guard let url = URL(string: gitHubUrl), let apiId = getApiId(), query.count > 0 else {
+            // The url is incorrect or the search query is empty, return to our default state.
+            gitHubItems = nil
+            
             return
         }
         
@@ -34,14 +42,9 @@ class GitHubViewModel : ObservableObject {
         
         urlRequest.setValue(bearerToken, forHTTPHeaderField: "Authorization")
         
-        let task = URLSession.shared
+        responseDataPublisher
             .dataTaskPublisher(for: urlRequest)
             .tryMap { data, response in
-                // throw error when bad server response is received
-                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                    throw URLError(.badServerResponse)
-                }
-                
                 return data
             }
             .decode(type: GitHubSearch.self, decoder: JSONDecoder())
@@ -50,8 +53,7 @@ class GitHubViewModel : ObservableObject {
             .eraseToAnyPublisher()
             .receive(on: RunLoop.main)
             .assign(to: \GitHubViewModel.gitHubItems, on: self)
-        
-        cancellables.insert(task)
+            .store(in: &cancellables)
     }
     
     /**
