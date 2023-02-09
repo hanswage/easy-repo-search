@@ -9,10 +9,14 @@ import Foundation
 import Combine
 
 class GitHubViewModel : ObservableObject {
+    // The user's search query
     @Published public var searchQuery: String = ""
-    @Published var gitHubItems: [GitHubItem]?
+    // The retrieved repositories
+    @Published public var gitHubItems: [GitHubItem]?
     
+    // A Set of tasks, that can be canceled if required.
     private var cancellables = Set<AnyCancellable>()
+    // The used response publisher, enabling mocking for testing purposes.
     private let responseDataPublisher: ResponseProtocol
     
     init(responseDataPublisher: ResponseProtocol = ResponseDataPublisher(session: URLSession.shared)) {
@@ -42,6 +46,7 @@ class GitHubViewModel : ObservableObject {
         
         urlRequest.setValue(bearerToken, forHTTPHeaderField: "Authorization")
         
+        // Retrieve repositories and parse them into a GitHubSearch model.
         responseDataPublisher
             .dataTaskPublisher(for: urlRequest)
             .tryMap { data, response in
@@ -57,7 +62,7 @@ class GitHubViewModel : ObservableObject {
     }
     
     /**
-     Cancels all currently running requests, preventing loading data twice
+     Cancels all currently running requests, preventing loading data twice.
      */
     private func cancelAll() {
         for cancellable in cancellables {

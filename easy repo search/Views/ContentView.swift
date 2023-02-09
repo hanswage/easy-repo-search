@@ -13,10 +13,12 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             if let items = gitHubViewModel.gitHubItems, items.count == 0 {
+                // This text shows up only if no items were found
                 Text("No repositories found, please search again.")
                     .font(.system(size: 14))
                     .bold()
             }
+            
             List(gitHubViewModel.gitHubItems ?? [], id: \.self) { item in
                 NavigationLink {
                     DetailView(gitHubItem: item)
@@ -29,6 +31,7 @@ struct ContentView: View {
         .searchable(text: $gitHubViewModel.searchQuery, prompt: "Search for user or repository name")
         .textInputAutocapitalization(.never)
         .onReceive(
+            // Search for repositories with a 2 second throttle, preventing too many api requests.
             gitHubViewModel.$searchQuery.throttle(
                 for: 2,
                 scheduler: RunLoop.main,

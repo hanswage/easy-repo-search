@@ -8,7 +8,9 @@
 import Foundation
 
 struct GitHubItem: Codable, Hashable {
+    let name: String?
     let fullName: String?
+    let repositoryDescription: String?
     let privateRepository: Bool?
     let owner: GitHubOwner?
     let repositoryUrl: String?
@@ -17,7 +19,9 @@ struct GitHubItem: Codable, Hashable {
     let forksCount: Int?
     
     enum CodingKeys: String, CodingKey {
+        case name
         case fullName = "full_name"
+        case repositoryDescription = "description"
         case privateRepository = "private"
         case owner
         case repositoryUrl = "html_url"
