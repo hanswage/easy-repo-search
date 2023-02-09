@@ -36,13 +36,13 @@ final class easy_repo_searchTests: XCTestCase {
     }
     
     func testNegativeNumber() throws {
-        var result = GitHubHelpers.setAvatarSize(withUrl: nil, size: -1)
+        let result = GitHubHelpers.setAvatarSize(withUrl: nil, size: -1)
         
         XCTAssertEqual(result, "")
     }
     
     func testZeroNumber() throws {
-        var result = GitHubHelpers.setAvatarSize(withUrl: nil, size: 0)
+        let result = GitHubHelpers.setAvatarSize(withUrl: nil, size: 0)
         
         XCTAssertEqual(result, "")
     }
