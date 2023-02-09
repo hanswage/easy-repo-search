@@ -13,7 +13,7 @@ Please use Xcode 14.2 or higher. No additional setup is required.
 # Config.xcconfig
 Found in `easy repo search/Resources` directory, there is a file called `Config.xcconfig`. This file contains the variable `GITHUB_KEY`. Please update this key with your own variable. A key is required to increase the number of requests a single user can make per minute. However, the app can run without a key, if it would be removed from the code.
 
-Note: for demonstration purposes, this key does not need to be changed as of now. However, the key will be invalidated in the near future.
+Note: The key is a dummy key and needs to be replaced.
 
 # Project setup
 The project has two targets: the app and Unit Tests.
